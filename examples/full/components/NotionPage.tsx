@@ -119,7 +119,7 @@ export const NotionPage = ({
         darkMode={false}
         rootDomain={rootDomain}
         rootPageId={rootPageId}
-        previewImages={previewImagesEnabled}
+        previewImages={false}
         components={{
           nextImage: Image,
           nextLink: Link,
