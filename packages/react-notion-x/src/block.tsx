@@ -8,6 +8,7 @@ import {
   getBlockCollectionId
 } from 'notion-utils'
 import * as types from 'notion-types'
+import { slugify } from 'transliteration'
 
 import { PageIcon } from './components/page-icon'
 import { PageTitle } from './components/page-title'
@@ -349,7 +350,11 @@ export const Block: React.FC<BlockProps> = (props) => {
         <span>
           <div id={id} className='notion-header-anchor' />
           {!block.format?.toggleable && (
-            <a className='notion-hash-link' href={`#${id}`} title={title}>
+            <a
+              className='notion-hash-link'
+              href={`#${slugify(title)}`}
+              title={title}
+            >
               <LinkIcon />
             </a>
           )}
@@ -364,19 +369,19 @@ export const Block: React.FC<BlockProps> = (props) => {
       //page title takes the h1 so all header blocks are greater
       if (isH1) {
         headerBlock = (
-          <h2 className={classNameStr} data-id={id}>
+          <h2 className={classNameStr} data-id={id} id={slugify(title)}>
             {innerHeader}
           </h2>
         )
       } else if (isH2) {
         headerBlock = (
-          <h3 className={classNameStr} data-id={id}>
+          <h3 className={classNameStr} data-id={id} id={slugify(title)}>
             {innerHeader}
           </h3>
         )
       } else {
         headerBlock = (
-          <h4 className={classNameStr} data-id={id}>
+          <h4 className={classNameStr} data-id={id} id={slugify(title)}>
             {innerHeader}
           </h4>
         )
