@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 
 import { NotionRenderer } from 'react-notion-x'
 import { ExtendedRecordMap } from 'notion-types'
-import { getPageTitle } from 'notion-utils'
+import { formatDate, getDateValue, getPageTitle } from 'notion-utils'
 import TweetEmbed from 'react-tweet-embed'
 
 import { Loading } from './Loading'
@@ -160,7 +160,36 @@ export const NotionPage = ({
           Equation,
           Pdf,
           Modal,
-          Tweet
+          Tweet,
+          propertyDateValue: (props) => {
+            const dateValue = getDateValue(props.data)
+            if (!dateValue) {
+              return ''
+            }
+            if (!dateValue.start_date) {
+              return ''
+            }
+            switch (dateValue.type) {
+              case 'date':
+                return formatDate(dateValue.start_date)
+              case 'datetime':
+                return `${formatDate(dateValue.start_date)} ${
+                  dateValue.start_time ?? ''
+                }`
+              case 'daterange':
+                return `${formatDate(dateValue.start_date)} → ${
+                  dateValue.end_date ? formatDate(dateValue.end_date) : ''
+                }`
+              case 'datetimerange':
+                return `${formatDate(dateValue.start_date)} ${
+                  dateValue.start_time ?? ''
+                } → ${
+                  dateValue.end_date ? formatDate(dateValue.end_date) : ''
+                } ${dateValue.end_time ?? ''}`
+              default:
+                break
+            }
+          }
         }}
 
         // NOTE: custom images will only take effect if previewImages is true and
