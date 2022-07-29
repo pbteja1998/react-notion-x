@@ -10,6 +10,7 @@ import { Text } from '../components/text'
 import { PageTitle } from '../components/page-title'
 import { GracefulImage } from '../components/graceful-image'
 import { evalFormula } from './eval-formula'
+import { formatDate, getDateValue } from 'notion-utils'
 
 export interface IPropertyProps {
   propertyId?: string
@@ -60,9 +61,35 @@ export const PropertyImpl: React.FC<IPropertyProps> = (props) => {
   const renderDateValue = React.useMemo(
     () =>
       function DateProperty() {
-        return <Text value={data} block={block} />
+        const dateValue = getDateValue(data)
+        if (!dateValue) {
+          return ''
+        }
+        if (!dateValue.start_date) {
+          return ''
+        }
+        switch (dateValue.type) {
+          case 'date':
+            return formatDate(dateValue.start_date)
+          case 'datetime':
+            return `${formatDate(dateValue.start_date)} ${
+              dateValue.start_time ?? ''
+            }`
+          case 'daterange':
+            return `${formatDate(dateValue.start_date)} → ${
+              dateValue.end_date ? formatDate(dateValue.end_date) : ''
+            }`
+          case 'datetimerange':
+            return `${formatDate(dateValue.start_date)} ${
+              dateValue.start_time ?? ''
+            } → ${dateValue.end_date ? formatDate(dateValue.end_date) : ''} ${
+              dateValue.end_time ?? ''
+            }`
+          default:
+            return ''
+        }
       },
-    [block, data]
+    [data]
   )
 
   const renderRelationValue = React.useMemo(

@@ -1,5 +1,4 @@
 // import { promises as fs } from 'fs'
-import got, { OptionsOfJSONResponseBody } from 'got'
 import pMap from 'p-map'
 
 import {
@@ -11,6 +10,8 @@ import {
 import * as notion from 'notion-types'
 
 import * as types from './types'
+
+type OptionsOfJSONResponseBody = any
 
 /**
  * Main Notion API client.
@@ -225,17 +226,17 @@ export class NotionAPI {
           block.type === 'audio' ||
           (block.type === 'image' && block.file_ids?.length) ||
           block.type === 'video' ||
-          block.type === 'file' ||
-          block.type === 'page')
+          block.type === 'file')
       ) {
-        const source =
-          block.type === 'page'
-            ? block.format?.page_cover
-            : block.properties?.source?.[0]?.[0]
+        const source = block.properties?.source?.[0]?.[0]
         // console.log(block, source)
 
         if (source) {
-          if (source.indexOf('youtube') >= 0 || source.indexOf('vimeo') >= 0) {
+          if (
+            source.indexOf('youtube') >= 0 ||
+            source.indexOf('vimeo') >= 0 ||
+            source.indexOf('loom') >= 0
+          ) {
             return []
           }
 
@@ -597,21 +598,18 @@ export class NotionAPI {
 
     const url = `${this._apiBaseUrl}/${endpoint}`
 
-    return got
-      .post(url, {
-        ...gotOptions,
-        json: body,
-        headers
-      })
-      .json()
+    // return got
+    //   .post(url, {
+    //     ...gotOptions,
+    //     json: body,
+    //     headers
+    //   })
+    //   .json()
 
-    // return fetch(url, {
-    //   method: 'post',
-    //   body: JSON.stringify(body),
-    //   headers
-    // }).then((res) => {
-    //   console.log(endpoint, res)
-    //   return res.json()
-    // })
+    return fetch(url, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers
+    }).then((res) => res.json())
   }
 }
