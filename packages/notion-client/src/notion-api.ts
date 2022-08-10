@@ -1,5 +1,4 @@
 // import { promises as fs } from 'fs'
-import got, { OptionsOfJSONResponseBody } from 'got'
 import pMap from 'p-map'
 
 import {
@@ -11,6 +10,8 @@ import {
 import * as notion from 'notion-types'
 
 import * as types from './types'
+
+type OptionsOfJSONResponseBody = any
 
 /**
  * Main Notion API client.
@@ -328,9 +329,10 @@ export class NotionAPI {
   ) {
     const type = collectionView?.type
     const isBoardType = type === 'board'
-    const groupBy =
-      collectionView?.format?.board_columns_by ||
-      collectionView?.format?.collection_group_by
+    const groupBy = isBoardType
+      ? collectionView?.format?.board_columns_by ||
+        collectionView?.format?.collection_group_by
+      : collectionView?.format?.collection_group_by
 
     let filters = []
     if (collectionView.format?.property_filters) {
@@ -342,6 +344,10 @@ export class NotionAPI {
           property: filterObj?.filter?.property
         }
       })
+    }
+
+    if (collectionView?.query2?.filter?.filters) {
+      filters.push(...collectionView.query2.filter.filters)
     }
 
     let loader: any = {
@@ -597,21 +603,18 @@ export class NotionAPI {
 
     const url = `${this._apiBaseUrl}/${endpoint}`
 
-    return got
-      .post(url, {
-        ...gotOptions,
-        json: body,
-        headers
-      })
-      .json()
+    // return got
+    //   .post(url, {
+    //     ...gotOptions,
+    //     json: body,
+    //     headers
+    //   })
+    //   .json()
 
-    // return fetch(url, {
-    //   method: 'post',
-    //   body: JSON.stringify(body),
-    //   headers
-    // }).then((res) => {
-    //   console.log(endpoint, res)
-    //   return res.json()
-    // })
+    return fetch(url, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers
+    }).then((res) => res.json())
   }
 }

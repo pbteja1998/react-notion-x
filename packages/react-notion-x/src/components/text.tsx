@@ -122,7 +122,14 @@ export const Text: React.FC<{
                 )
 
               case 'c':
-                return <code className='notion-inline-code'>{element}</code>
+                return (
+                  <components.InlineCode
+                    block={block}
+                    className='notion-inline-code'
+                  >
+                    {element}
+                  </components.InlineCode>
+                )
 
               case 'b':
                 return <b>{element}</b>
