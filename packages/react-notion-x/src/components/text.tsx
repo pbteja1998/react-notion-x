@@ -1,12 +1,40 @@
 import * as React from 'react'
 import { Block, Decoration, ExternalObjectInstance } from 'notion-types'
-import { parsePageId } from 'notion-utils'
+import { formatDate, getDateValue, parsePageId } from 'notion-utils'
 
 import { useNotionContext } from '../context'
-import { formatDate, getHashFragmentValue } from '../utils'
+import { getHashFragmentValue } from '../utils'
 import { PageTitle } from './page-title'
 import { GracefulImage } from './graceful-image'
 import { EOI } from './eoi'
+
+export function DateProperty(data: any) {
+  const dateValue = getDateValue(data)
+  if (!dateValue) {
+    return ''
+  }
+  if (!dateValue.start_date) {
+    return ''
+  }
+  switch (dateValue.type) {
+    case 'date':
+      return formatDate(dateValue.start_date)
+    case 'datetime':
+      return `${formatDate(dateValue.start_date)} ${dateValue.start_time ?? ''}`
+    case 'daterange':
+      return `${formatDate(dateValue.start_date)} → ${
+        dateValue.end_date ? formatDate(dateValue.end_date) : ''
+      }`
+    case 'datetimerange':
+      return `${formatDate(dateValue.start_date)} ${
+        dateValue.start_time ?? ''
+      } → ${dateValue.end_date ? formatDate(dateValue.end_date) : ''} ${
+        dateValue.end_time ?? ''
+      }`
+    default:
+      return ''
+  }
+}
 
 /**
  * Renders a single piece of Notion text, including basic rich text formatting.
@@ -122,7 +150,14 @@ export const Text: React.FC<{
                 )
 
               case 'c':
-                return <code className='notion-inline-code'>{element}</code>
+                return (
+                  <components.InlineCode
+                    block={block}
+                    className='notion-inline-code'
+                  >
+                    {element}
+                  </components.InlineCode>
+                )
 
               case 'b':
                 return <b>{element}</b>
@@ -182,23 +217,7 @@ export const Text: React.FC<{
               }
 
               case 'd': {
-                const v = decorator[1]
-                const type = v?.type
-
-                if (type === 'date') {
-                  // Example: Jul 31, 2010
-                  const startDate = v.start_date
-
-                  return formatDate(startDate)
-                } else if (type === 'daterange') {
-                  // Example: Jul 31, 2010 → Jul 31, 2020
-                  const startDate = v.start_date
-                  const endDate = v.end_date
-
-                  return `${formatDate(startDate)} → ${formatDate(endDate)}`
-                } else {
-                  return element
-                }
+                return DateProperty(decorator)
               }
 
               case 'u': {

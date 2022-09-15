@@ -24,6 +24,11 @@ export interface NotionComponents {
 
   // blocks
   Code: any
+  InlineCode: React.FC<{
+    block: types.Block
+    className: string
+    children: React.ReactNode
+  }>
   Equation: any
   Callout?: any
 

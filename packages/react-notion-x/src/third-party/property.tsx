@@ -6,7 +6,7 @@ import format from 'date-fns/format/index.js'
 import { cs } from '../utils'
 import { useNotionContext } from '../context'
 import { Checkbox } from '../components/checkbox'
-import { Text } from '../components/text'
+import { DateProperty, Text } from '../components/text'
 import { PageTitle } from '../components/page-title'
 import { GracefulImage } from '../components/graceful-image'
 import { evalFormula } from './eval-formula'
@@ -57,13 +57,7 @@ export const PropertyImpl: React.FC<IPropertyProps> = (props) => {
     [block, data]
   )
 
-  const renderDateValue = React.useMemo(
-    () =>
-      function DateProperty() {
-        return <Text value={data} block={block} />
-      },
-    [block, data]
-  )
+  const renderDateValue = React.useMemo(() => () => DateProperty(data), [data])
 
   const renderRelationValue = React.useMemo(
     () =>

@@ -78,6 +78,14 @@ const DefaultPageLinkMemo = React.memo(DefaultPageLink)
 const DefaultEmbed = AssetWrapper
 const DefaultHeader = Header
 
+const DefaultInlineCode: React.FC = ({
+  className,
+  children
+}: {
+  className: string
+  children: React.ReactNode
+}) => <code className={className}>{children}</code>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const dummyLink = ({ href, rel, target, title, ...rest }) => (
   <span {...rest} />
@@ -104,6 +112,7 @@ const defaultComponents: NotionComponents = {
   Callout: undefined, // use the built-in callout rendering by default
 
   Code: dummyComponent('Code'),
+  InlineCode: DefaultInlineCode,
   Equation: dummyComponent('Equation'),
 
   Collection: dummyComponent('Collection'),

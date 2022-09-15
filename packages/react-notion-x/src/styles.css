@@ -677,8 +677,7 @@ svg.notion-page-icon {
   width: 100%;
   margin: 6px 0;
   padding: 0;
-  border-top: none;
-  border-color: var(--fg-color-0);
+  border-top: 1px solid var(--fg-color-0);
 }
 
 .notion-link {
@@ -1564,6 +1563,7 @@ svg.notion-page-icon {
   margin: 1px 0;
   max-width: 100%;
   overflow: hidden;
+  height: 100%;
 }
 
 .notion-list-item-title {
@@ -2565,20 +2565,30 @@ svg.notion-page-icon {
 }
 
 .notion-simple-table {
-  border: 1px solid var(--fg-color-5);
+  border: 1px solid var(--fg-color-1);
   border-collapse: collapse;
   border-spacing: 0;
   font-size: 14px;
 }
 
-.notion-simple-table tr:first-child td {
+.notion-simple-table.notion-simple-table-with-column-header tr:first-child td {
+  background: var(--bg-color-0);
+}
+
+.notion-simple-table.notion-simple-table-with-row-header tr td:first-child {
   background: var(--bg-color-0);
 }
 
 .notion-simple-table td {
-  border: 1px solid var(--fg-color-5);
+  border: 1px solid var(--fg-color-1);
   padding: 8px 8px;
   white-space: pre-wrap;
+}
+
+.notion-simple-table > tbody > tr > td {
+  width: auto;
+  min-width: 120px;
+  max-width: 240px;
 }
 
 .notion-external {
