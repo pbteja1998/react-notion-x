@@ -8,6 +8,7 @@ export type FormulaType =
   | 'operator'
   | 'function'
   | 'symbol'
+  | 'conditional'
 
 export type FormulaConstantType = 'e' | 'false' | 'true' | 'pi'
 
@@ -143,9 +144,17 @@ export interface OperatorFormula extends BaseFormula {
   args: Array<Formula>
 }
 
+export interface ConditionalFormula extends BaseFormula {
+  type: 'conditional'
+  true: Formula
+  false: Formula
+  condition: Formula
+}
+
 export type Formula =
   | FunctionFormula
   | OperatorFormula
   | ConstantFormula
   | PropertyFormula
   | SymbolFormula
+  | ConditionalFormula

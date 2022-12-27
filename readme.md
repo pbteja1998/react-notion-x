@@ -10,20 +10,23 @@
 
 ## Contents
 
-- [Advice](#advice)
-- [Features](#features)
-- [Usage](#usage)
-- [Styles](#styles)
-- [Optional Components](#optional-components)
-- [Private Pages](#private-pages)
-- [Next.js Examples](#nextjs-examples)
-- [Packages](#packages)
-- [Supported Blocks](#supported-blocks)
-- [Performance](#performance)
-- [Related](#related)
-- [Contributing](#contributing)
-- [License](#license)
-- [Sponsor](#sponsor)
+- [React Notion X](#react-notion-x)
+  - [Contents](#contents)
+  - [Advice](#advice)
+  - [Features](#features)
+  - [Usage](#usage)
+  - [Styles](#styles)
+  - [Optional Components](#optional-components)
+  - [Private Pages](#private-pages)
+  - [Next.js Examples](#nextjs-examples)
+  - [Packages](#packages)
+  - [Supported Blocks](#supported-blocks)
+  - [Performance](#performance)
+  - [Related](#related)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Sponsor](#sponsor)
+  - [Changes](#changes)
 
 ## Advice
 
@@ -60,6 +63,7 @@ Once you have the data for a Notion page, you can render it via React:
 
 ```tsx
 import * as React from 'react'
+
 import { NotionRenderer } from 'react-notion-x'
 
 export default ({ recordMap }) => (
@@ -75,13 +79,11 @@ You'll need to import some CSS styles as well. If you're using Next.js, we recom
 
 ```ts
 // core styles shared by all of react-notion-x (required)
-import 'react-notion-x/src/styles.css'
-
-// used for code syntax highlighting (optional)
-import 'prismjs/themes/prism-tomorrow.css'
-
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css'
+// used for code syntax highlighting (optional)
+import 'prismjs/themes/prism-tomorrow.css'
+import 'react-notion-x/src/styles.css'
 ```
 
 ## Optional Components
@@ -329,3 +331,10 @@ Support my OSS work by <a href="https://twitter.com/transitive_bs">following me 
     <img alt="React Notion X" src="https://raw.githubusercontent.com/NotionX/react-notion-x/master/media/super-so-banner.png">
   </a>
 </p>
+
+## Changes
+
+- notion-utils/src/get-page-image-urls (Ignored the signed url)
+- react-notion-x/src/components/asset (Ignored the signed url)
+- react-notion-x/src/components/audio (Ignored the signed url) - reverted
+- react-notion-x/src/components/file (Ignored the signed url) - reverted

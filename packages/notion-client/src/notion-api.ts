@@ -1,6 +1,6 @@
 // import { promises as fs } from 'fs'
 import * as notion from 'notion-types'
-import got, { OptionsOfJSONResponseBody } from 'got'
+// import got, { OptionsOfJSONResponseBody } from 'got'
 import {
   getBlockCollectionId,
   getPageContentBlockIds,
@@ -10,6 +10,8 @@ import {
 import pMap from 'p-map'
 
 import * as types from './types'
+
+type OptionsOfJSONResponseBody = any
 
 /**
  * Main Notion API client.
@@ -240,10 +242,12 @@ export class NotionAPI {
 
           return {
             permissionRecord: {
-              table: 'block',
-              id: block.id
+              id: block.id,
+              table: 'block'
             },
-            url: source
+            url: source,
+            useS3Url: false,
+            spaceId: block.space_id
           }
         }
       }
@@ -263,7 +267,11 @@ export class NotionAPI {
             const file = allFileInstances[i]
             const signedUrl = signedUrls[i]
 
-            recordMap.signed_urls[file.permissionRecord.id] = signedUrl
+            const url2 = new URL(signedUrl)
+            if (signedUrl.includes('file.notion.so')) {
+              url2.searchParams.set('spaceId', allFileInstances[i].spaceId)
+            }
+            recordMap.signed_urls[file.permissionRecord.id] = url2.toString()
           }
         }
       } catch (err) {
@@ -600,21 +608,18 @@ export class NotionAPI {
 
     const url = `${this._apiBaseUrl}/${endpoint}`
 
-    return got
-      .post(url, {
-        ...gotOptions,
-        json: body,
-        headers
-      })
-      .json()
+    // return got
+    //   .post(url, {
+    //     ...gotOptions,
+    //     json: body,
+    //     headers
+    //   })
+    //   .json()
 
-    // return fetch(url, {
-    //   method: 'post',
-    //   body: JSON.stringify(body),
-    //   headers
-    // }).then((res) => {
-    //   console.log(endpoint, res)
-    //   return res.json()
-    // })
+    return fetch(url, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers
+    }).then((res) => res.json())
   }
 }

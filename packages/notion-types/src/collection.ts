@@ -17,6 +17,7 @@ export interface SelectOption {
 export interface CollectionPropertySchema {
   name: string
   type: PropertyType
+  icon?: string
   options?: SelectOption[]
   number_format?: NumberFormat
   formula?: Formula

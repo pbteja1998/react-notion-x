@@ -12,6 +12,7 @@ export const CollectionColumnTitle: React.FC<{
       <PropertyIcon
         className='notion-collection-column-title-icon'
         type={schema.type}
+        icon={schema.icon}
       />
 
       <div className='notion-collection-column-title-body'>{schema.name}</div>
