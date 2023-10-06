@@ -23,6 +23,7 @@ import UrlIcon from './type-url'
 interface PropertyIconProps {
   className?: string
   type: PropertyType
+  icon?: string
 }
 
 const iconMap = {
@@ -49,8 +50,21 @@ const iconMap = {
 
 export const PropertyIcon: React.FC<PropertyIconProps> = ({
   type,
+  icon: notionIcon,
   ...rest
 }) => {
+  if (notionIcon) {
+    return (
+      <>
+        <img
+          src={`https://www.notion.so${notionIcon}?mode=light`}
+          alt=''
+          style={{ width: '16px', height: '16px', transform: 'scale(1.2)' }}
+          {...rest}
+        />
+      </>
+    )
+  }
   const icon = iconMap[type] as any
   if (!icon) return null
 

@@ -18,6 +18,7 @@ import { CollectionViewIcon } from '../icons/collection-view-icon'
 import { cs } from '../utils'
 import { CollectionRow } from './collection-row'
 import { CollectionView } from './collection-view'
+import { evalFormula } from './eval-formula'
 import { PropertyImplMemo } from './property'
 
 const isServer = typeof window === 'undefined'
@@ -273,4 +274,4 @@ const CollectionViewColumnDesc: React.FC<{
   )
 }
 
-export { PropertyImplMemo as Property }
+export { PropertyImplMemo as Property, evalFormula }

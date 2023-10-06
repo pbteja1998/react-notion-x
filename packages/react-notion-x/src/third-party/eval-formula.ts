@@ -111,12 +111,31 @@ export function evalFormula(
     case 'function':
       return evalFunctionFormula(formula, ctx)
 
+    case 'conditional':
+      return evalConditionalFormula(formula, ctx)
+
     default:
       // console.log(formula)
       throw new Error(
         `invalid or unsupported formula "${(formula as any)?.type}`
       )
   }
+}
+
+/**
+ * Evaluates a Notion conditional formula.
+ *
+ * Note that all operators are also exposed as functions, so we handle them the same.
+ *
+ * @private
+ */
+function evalConditionalFormula(
+  formula: types.ConditionalFormula,
+  ctx: EvalFormulaContext
+): types.FormulaResult {
+  return evalFormula(formula.condition, ctx)
+    ? evalFormula(formula.true, ctx)
+    : evalFormula(formula.false, ctx)
 }
 
 /**

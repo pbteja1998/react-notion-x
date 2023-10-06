@@ -23,12 +23,24 @@ export const getPageTableOfContents = (
   page: types.PageBlock,
   recordMap: types.ExtendedRecordMap
 ): Array<TableOfContentsEntry> => {
-  const toc = (page.content ?? [])
+  const tocInitial = (page?.content ?? [])
     .map((blockId: string) => {
       const block = recordMap.block[blockId]?.value
 
       if (block) {
         const { type } = block
+
+        if (type === 'transclusion_reference') {
+          const referencePointerId =
+            block?.format?.transclusion_reference_pointer?.id
+
+          if (!referencePointerId) {
+            return null
+          }
+          const syncedBlock = recordMap.block[referencePointerId]?.value
+          const toc2 = getPageTableOfContents(syncedBlock as any, recordMap)
+          return toc2
+        }
 
         if (
           type === 'header' ||
@@ -46,7 +58,17 @@ export const getPageTableOfContents = (
 
       return null
     })
-    .filter(Boolean) as Array<TableOfContentsEntry>
+    .filter(Boolean) as Array<TableOfContentsEntry | TableOfContentsEntry[]>
+
+  const toc: Array<TableOfContentsEntry> = []
+
+  tocInitial.forEach((t) => {
+    if (Array.isArray(t)) {
+      toc.push(...t)
+    } else {
+      toc.push(t)
+    }
+  })
 
   const indentLevelStack = [
     {

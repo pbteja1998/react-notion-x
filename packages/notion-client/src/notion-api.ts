@@ -1,6 +1,6 @@
 // import { promises as fs } from 'fs'
 import * as notion from 'notion-types'
-import got, { OptionsOfJSONResponseBody } from 'got'
+// import got, { OptionsOfJSONResponseBody } from 'got'
 import {
   getBlockCollectionId,
   getPageContentBlockIds,
@@ -10,6 +10,8 @@ import {
 import pMap from 'p-map'
 
 import * as types from './types'
+
+type OptionsOfJSONResponseBody = any
 
 /**
  * Main Notion API client.
@@ -147,6 +149,25 @@ export class NotionAPI {
               }
             )
 
+            const allPageIds: string[] =
+              (collectionData.result as any)?.reducerResults
+                ?.collection_group_results?.blockIds ?? []
+
+            const availableBlockIds = Object.keys(
+              collectionData.recordMap.block
+            ).filter(
+              (x) => collectionData.recordMap.block[x].value.type === 'page'
+            )
+
+            const pendingBlockIds = allPageIds.filter(
+              (a) => !availableBlockIds.includes(a)
+            )
+
+            const newPendingPageBlocks = await this.getBlocks(
+              pendingBlockIds,
+              gotOptions
+            ).then((res) => res.recordMap.block)
+
             // await fs.writeFile(
             //   `${collectionId}-${collectionViewId}.json`,
             //   JSON.stringify(collectionData.result, null, 2)
@@ -154,7 +175,8 @@ export class NotionAPI {
 
             recordMap.block = {
               ...recordMap.block,
-              ...collectionData.recordMap.block
+              ...collectionData.recordMap.block,
+              ...newPendingPageBlocks
             }
 
             recordMap.collection = {
@@ -234,7 +256,10 @@ export class NotionAPI {
         // console.log(block, source)
 
         if (source) {
-          if (!source.includes('secure.notion-static.com')) {
+          if (
+            !source.includes('secure.notion-static.com') &&
+            !source.includes('prod-files-secure.s3.us-west-2.amazonaws.com')
+          ) {
             return []
           }
 
@@ -243,7 +268,9 @@ export class NotionAPI {
               table: 'block',
               id: block.id
             },
-            url: source
+            url: source,
+            useS3Url: false,
+            spaceId: block.space_id
           }
         }
       }
@@ -262,8 +289,11 @@ export class NotionAPI {
           for (let i = 0; i < allFileInstances.length; ++i) {
             const file = allFileInstances[i]
             const signedUrl = signedUrls[i]
-
-            recordMap.signed_urls[file.permissionRecord.id] = signedUrl
+            const url2 = new URL(signedUrl)
+            if (signedUrl.includes('file.notion.so')) {
+              url2.searchParams.set('spaceId', allFileInstances[i].spaceId)
+            }
+            recordMap.signed_urls[file.permissionRecord.id] = url2.toString()
           }
         }
       } catch (err) {
@@ -602,21 +632,18 @@ export class NotionAPI {
 
     const url = `${this._apiBaseUrl}/${endpoint}`
 
-    return got
-      .post(url, {
-        ...gotOptions,
-        json: body,
-        headers
-      })
-      .json()
+    // return got
+    //   .post(url, {
+    //     ...gotOptions,
+    //     json: body,
+    //     headers
+    //   })
+    //   .json()
 
-    // return fetch(url, {
-    //   method: 'post',
-    //   body: JSON.stringify(body),
-    //   headers
-    // }).then((res) => {
-    //   console.log(endpoint, res)
-    //   return res.json()
-    // })
+    return fetch(url, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers
+    }).then((res) => res.json())
   }
 }
